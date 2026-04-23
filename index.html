@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SkyDumps</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Luckiest+Guy&family=Nunito:wght@400;600;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg-dark: #0b0c10;
+      --bg-panel: #1f2833;
+      --bg-panel-hover: #2b3745;
+      --portal-cyan: #45f3ff;
+      --portal-blue: #0088ff;
+      --magic-purple: #c084fc;
+      --gold: #ffd700;
+      --text-light: #e0e6ed;
+      --text-muted: #8b9bb4;
+      --error: #ff4c4c;
+      --success: #4ade80;
+      
+      --font-title: 'Luckiest Guy', cursive;
+      --font-body: 'Nunito', sans-serif;
+      --font-mono: 'Space Mono', monospace;
+      
+      --radius: 16px;
+      --shadow-portal: 0 0 20px var(--portal-cyan), inset 0 0 20px var(--portal-blue);
+      --shadow-panel: 0 8px 32px rgba(0, 0, 0, 0.4);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: var(--font-body);
+      background: radial-gradient(circle at top center, #1a2333 0%, var(--bg-dark) 100%);
+      color: var(--text-light);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 2rem 1rem;
+      background-attachment: fixed;
+    }
+
+    /* ── EN-TÊTE ── */
+    .header {
+      text-align: center;
+      margin-bottom: 2rem;
+      animation: fadeInDown 0.6s ease-out;
+    }
+    .title {
+      font-family: var(--font-title);
+      font-size: 3.5rem;
+      color: var(--gold);
+      letter-spacing: 2px;
+      text-shadow: 0 4px 15px rgba(255, 215, 0, 0.4), 3px 3px 0 #000;
+      margin-bottom: 0.5rem;
+    }
+    .subtitle {
+      font-size: 1.1rem;
+      color: var(--portal-cyan);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    /* ── MISE EN PAGE PRINCIPALE ── */
+    .container {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+      width: 100%;
+      max-width: 1000px;
+      animation: fadeIn 0.8s ease-out 0.2s both;
+    }
+    @media (max-width: 768px) {
+      .container { grid-template-columns: 1fr; }
+    }
+
+    /* ── PANNEAUX ── */
+    .panel {
+      background: rgba(31, 40, 51, 0.85);
+      backdrop-filter: blur(10px);
+      border: 2px solid rgba(69, 243, 255, 0.2);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+      box-shadow: var(--shadow-panel);
+      display: flex;
+      flex-direction: column;
+    }
+    .panel-title {
+      font-family: var(--font-title);
+      font-size: 1.5rem;
+      color: var(--portal-cyan);
+      margin-bottom: 1rem;
+      letter-spacing: 1px;
+    }
+
+    /* ── RECHERCHE & LISTE (GAUCHE) ── */
+    .search-box {
+      position: relative;
+      margin-bottom: 1rem;
+    }
+    .search-input {
+      width: 100%;
+      background: rgba(11, 12, 16, 0.6);
+      border: 2px solid rgba(69, 243, 255, 0.3);
+      border-radius: 12px;
+      padding: 0.8rem 1rem 0.8rem 2.5rem;
+      color: white;
+      font-family: var(--font-body);
+      font-size: 1rem;
+      transition: all 0.3s ease;
+    }
+    .search-input:focus {
+      outline: none;
+      border-color: var(--portal-cyan);
+      box-shadow: 0 0 10px rgba(69, 243, 255, 0.3);
+    }
+    .search-icon {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 1.2rem;
+    }
+
+    .fig-list {
+      flex: 1;
+      background: rgba(0, 0, 0, 0.2);
+      border-radius: 12px;
+      max-height: 400px;
+      overflow-y: auto;
+      scrollbar-width: thin;
+      scrollbar-color: var(--portal-cyan) rgba(0,0,0,0.2);
+    }
+    .fig-list::-webkit-scrollbar { width: 6px; }
+    .fig-list::-webkit-scrollbar-thumb { background: var(--portal-cyan); border-radius: 6px; }
+
+    .fig-item {
+      display: flex;
+      align-items: center;
+      padding: 0.75rem 1rem;
+      gap: 1rem;
+      cursor: pointer;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+      transition: background 0.2s, border-left 0.2s;
+      border-left: 4px solid transparent;
+    }
+    .fig-item:hover, .fig-item:focus {
+      background: var(--bg-panel-hover);
+      outline: none;
+    }
+    .fig-item.selected {
+      background: rgba(69, 243, 255, 0.15);
+      border-left-color: var(--portal-cyan);
+    }
+    .fig-thumb {
+      width: 40px;
+      height: 40px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: rgba(0, 0, 0, 0.3);
+      border-radius: 50%;
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+    .fig-thumb img { max-width: 100%; max-height: 100%; object-fit: contain; }
+    .fig-info { flex: 1; }
+    .fig-name { font-weight: 800; font-size: 0.95rem; }
+    .fig-id { font-family: var(--font-mono); font-size: 0.75rem; color: var(--text-muted); }
+    .fig-status { padding: 1rem; text-align: center; color: var(--text-muted); font-style: italic; }
+
+    /* ── LE PORTAIL & GÉNÉRATION (DROITE) ── */
+    .portal-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: 1.5rem;
+      padding-top: 1rem;
+    }
+    
+    /* Le Portail Magique */
+    .portal-ring {
+      width: 180px;
+      height: 180px;
+      border-radius: 50%;
+      border: 4px solid rgba(69, 243, 255, 0.3);
+      background: radial-gradient(circle, rgba(0,136,255,0.2) 0%, transparent 70%);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+      transition: all 0.5s ease;
+    }
+    .portal-ring.active {
+      border-color: var(--portal-cyan);
+      box-shadow: var(--shadow-portal);
+      animation: pulsePortal 2s infinite alternate;
+    }
+    .portal-ring img {
+      max-width: 140px;
+      max-height: 140px;
+      filter: drop-shadow(0 10px 15px rgba(0,0,0,0.8));
+      z-index: 2;
+      transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+    .portal-ring.active img { transform: translateY(-10px) scale(1.1); }
+    
+    .portal-ring::after {
+      content: '';
+      position: absolute;
+      width: 100%; height: 100%;
+      border-radius: 50%;
+      border: 2px dashed rgba(69, 243, 255, 0.5);
+      animation: spin 10s linear infinite;
+      opacity: 0;
+      transition: opacity 0.5s;
+    }
+    .portal-ring.active::after { opacity: 1; }
+
+    .selected-info h3 { font-family: var(--font-title); font-size: 1.8rem; color: var(--gold); letter-spacing: 1px; }
+    .selected-info p { font-family: var(--font-mono); color: var(--portal-cyan); font-size: 0.9rem; }
+
+    /* Paramètres (UID) */
+    .settings-group {
+      width: 100%;
+      text-align: left;
+      background: rgba(0,0,0,0.2);
+      padding: 1rem;
+      border-radius: 12px;
+    }
+    .settings-group label {
+      display: block;
+      font-weight: 800;
+      color: var(--text-muted);
+      margin-bottom: 0.5rem;
+      text-transform: uppercase;
+      font-size: 0.8rem;
+    }
+    .uid-controls { display: flex; gap: 0.5rem; }
+    .uid-input {
+      flex: 1;
+      background: rgba(11, 12, 16, 0.8);
+      border: 2px solid var(--text-muted);
+      border-radius: 8px;
+      padding: 0.8rem;
+      color: white;
+      font-family: var(--font-mono);
+      font-size: 1.1rem;
+      text-transform: uppercase;
+      text-align: center;
+      letter-spacing: 3px;
+      transition: border-color 0.3s;
+    }
+    .uid-input.valid { border-color: var(--success); box-shadow: 0 0 8px rgba(74, 222, 128, 0.3); }
+    .uid-input.invalid { border-color: var(--error); box-shadow: 0 0 8px rgba(255, 76, 76, 0.3); }
+    
+    .btn-random {
+      background: var(--magic-purple);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 0 1rem;
+      font-family: var(--font-body);
+      font-weight: 800;
+      cursor: pointer;
+      transition: transform 0.1s, filter 0.2s;
+    }
+    .btn-random:hover { filter: brightness(1.2); }
+    .btn-random:active { transform: scale(0.95); }
+
+    .uid-feedback {
+      margin-top: 0.5rem;
+      font-size: 0.8rem;
+      font-weight: 600;
+      text-align: center;
+    }
+    .uid-feedback.ok { color: var(--success); }
+    .uid-feedback.err { color: var(--error); }
+
+    /* Bouton Téléchargement */
+    .btn-download {
+      display: block;
+      width: 100%;
+      background: linear-gradient(135deg, var(--gold), #ff8c00);
+      color: #000;
+      border: none;
+      border-radius: 12px;
+      padding: 1.2rem;
+      font-family: var(--font-title);
+      font-size: 1.5rem;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      cursor: pointer;
+      text-decoration: none;
+      text-align: center;
+      transition: all 0.3s ease;
+      box-shadow: 0 6px 0 #cc7000, 0 10px 20px rgba(0,0,0,0.5);
+    }
+    .btn-download:hover:not(.disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 0 #cc7000, 0 15px 25px rgba(255, 215, 0, 0.4);
+    }
+    .btn-download:active:not(.disabled) {
+      transform: translateY(4px);
+      box-shadow: 0 2px 0 #cc7000;
+    }
+    .btn-download.disabled {
+      background: #334;
+      color: #667;
+      box-shadow: 0 6px 0 #223;
+      cursor: not-allowed;
+      pointer-events: none;
+    }
+
+    /* ── BADGES INFO ── */
+    .badges {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 0.8rem;
+      margin-top: 1rem;
+    }
+    .badge {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      padding: 0.4rem 0.8rem;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text-muted);
+    }
+    .badge.green { color: var(--success); border-color: rgba(74, 222, 128, 0.3); }
+    .badge.red { color: #ff8888; border-color: rgba(255, 76, 76, 0.3); }
+
+    /* ── ANIMATIONS ── */
+    @keyframes fadeInDown {
+      from { opacity: 0; transform: translateY(-20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    @keyframes spin { 100% { transform: rotate(360deg); } }
+    @keyframes pulsePortal {
+      0% { box-shadow: 0 0 15px var(--portal-cyan), inset 0 0 15px var(--portal-blue); }
+      100% { box-shadow: 0 0 30px var(--portal-cyan), inset 0 0 30px var(--portal-blue); }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="header">
+    <h1 class="title">Générateur SkyDumps</h1>
+    <div class="subtitle">Créez vos figurines numériques</div>
+  </header>
+
+  <main class="container">
+    
+    <!-- COLONNE GAUCHE : SÉLECTION -->
+    <section class="panel">
+      <h2 class="panel-title">1. Choisissez une figurine</h2>
+      
+      <div class="search-box">
+        <span class="search-icon">🔍</span>
+        <input type="text" id="searchInput" class="search-input" placeholder="Rechercher une figurine..." aria-label="Rechercher une figurine" autocomplete="off" />
+      </div>
+
+      <div class="fig-list" id="figList" role="listbox">
+        <div class="fig-status" id="figCount">Chargement des données magiques...</div>
+      </div>
+    </section>
+
+    <!-- COLONNE DROITE : PORTAIL ET GÉNÉRATION -->
+    <section class="panel">
+      <h2 class="panel-title">2. Le Portail de Pouvoir</h2>
+      
+      <div class="portal-container">
+        <!-- Le Portail -->
+        <div class="portal-ring" id="portalRing">
+          <img id="previewImg" src="" alt="Aperçu de la figurine" style="display: none;" />
+        </div>
+        
+        <div class="selected-info">
+          <h3 id="previewName">En attente...</h3>
+          <p id="previewMeta">Placez une figurine sur le portail</p>
+        </div>
+
+        <!-- Paramètres UID -->
+        <div class="settings-group">
+          <label for="uidInput">Identifiant Unique (UID)</label>
+          <div class="uid-controls">
+            <input type="text" id="uidInput" class="uid-input" placeholder="Ex: A1B2C3D4" maxlength="8" spellcheck="false" aria-label="UID en Hexadécimal" />
+            <button type="button" class="btn-random" id="randomBtn" title="Générer un UID aléatoire">Aléatoire</button>
+          </div>
+          <div class="uid-feedback" id="uidHint">8 caractères hexadécimaux — A–F, 0–9</div>
+        </div>
+
+        <!-- Bouton de génération -->
+        <a id="downloadBtn" class="btn-download disabled" href="#" role="button" aria-disabled="true">
+          Générer le Dump
+        </a>
+      </div>
+
+      <!-- Badges d'information -->
+      <div class="badges">
+        <span class="badge green">✓ Émulateurs</span>
+        <span class="badge green">✓ Console via NFC</span>
+        <span class="badge red">✗ Imaginators (Non cracké)</span>
+      </div>
+    </section>
+
+  </main>
+
+<script>
+const API_BASE = "https://modernskylanders.github.io/api-skylanders";
+const IMG_BASE = API_BASE + "/images/";
+
+
+const DUMP_LIST = [
+  {i:14,v:10245,n:"Anchors Away Gill Grunt"},{i:200,v:0,n:"Anvil Rain"},{i:211,v:12299,n:"Aqua Axe (Water Axe)"},{i:210,v:12302,n:"Arcane Hourglass (Magic Hourglass)"},{i:3302,v:8710,n:"Arkeyan Crossbow"},{i:3426,v:16640,n:"Astroblast"},{i:214,v:12295,n:"Automatic Angel (Tech Angel)"},{i:210,v:12299,n:"Axe of Illusion (Magic Axe)"},{i:3446,v:16384,n:"Bad Juju"},{i:3476,v:16384,n:"Bad Juju Vehicle"},{i:216,v:12292,n:"Banded Boulder (Earth Orb)"},{i:540,v:12288,n:"Barkley (Mini)"},{i:540,v:4096,n:"Barkley (Sidekick)"},{i:3240,v:16384,n:"Barrel Blaster"},{i:4,v:0,n:"Bash"},{i:4,v:6145,n:"Bash (Series 2)"},{i:480,v:12288,n:"Bat Spin"},{i:3200,v:8192,n:"Battle Hammer"},{i:219,v:12315,n:"Beam Scream (Light Yawn)"},{i:19,v:10245,n:"Big Bang Trigger Happy"},{i:3420,v:16640,n:"Big Bubble Pop Fizz"},{i:3420,v:17678,n:"Birthday Bash Big Bubble Pop Fizz"},{i:210,v:12290,n:"Biter's Bane (Magic Log Holder)"},{i:485,v:12288,n:"Blackout"},{i:1014,v:8192,n:"Blade"},{i:453,v:12288,n:"Blades"},{i:2004,v:8192,n:"Blast"},{i:466,v:12288,n:"Blastermind"},{i:215,v:12315,n:"Blazing Belch (Fire Yawn)"},{i:106,v:10245,n:"Blizzard Chill"},{i:1006,v:8192,n:"Bomb"},{i:1006,v:8214,n:"Bomb (Gold)"},{i:3417,v:16640,n:"Bone Bash Roller Brawl"},{i:3417,v:16670,n:"Bone Bash Roller Brawl (Dark Bronze)"},{i:2000,v:8192,n:"Boom"},{i:22,v:0,n:"Boomer"},{i:22,v:18448,n:"Boomer (Eon's Elite)"},{i:502,v:12288,n:"Bop"},{i:110,v:4614,n:"Bouncer"},{i:506,v:12288,n:"Breeze"},{i:212,v:12291,n:"Breezy Bird (Air Toucan)"},{i:3456,v:16384,n:"Broccoli Guy"},{i:3486,v:16384,n:"Broccoli Guy Vehicle"},{i:1015,v:8192,n:"Buckler"},{i:3006,v:8192,n:"Bumble Blast"},{i:3006,v:8710,n:"Bumble Blast (LightCore)"},{i:3223,v:16384,n:"Burn-Cycle"},{i:3223,v:16414,n:"Burn-Cycle (Patina)"},{i:474,v:12288,n:"Bushwhack"},{i:3241,v:16384,n:"Buzz Wing"},{i:24,v:0,n:"Camo"},{i:3442,v:16384,n:"Cap'n Cluck"},{i:3461,v:16384,n:"Captain Frightbeard"},{i:1010,v:8192,n:"Charge"},{i:3440,v:16384,n:"Chef Pepper Jack"},{i:106,v:4096,n:"Chill"},{i:106,v:4614,n:"Chill (LightCore)"},{i:3464,v:16384,n:"Chill Bill"},{i:3494,v:16384,n:"Chill Bill Vehicle"},{i:3483,v:16384,n:"Chompy Buster"},{i:3453,v:16384,n:"Chompy Mage"},{i:30,v:0,n:"Chop Chop"},{i:30,v:18448,n:"Chop Chop (Eon's Elite)"},{i:30,v:10262,n:"Chop Chop (Green)"},{i:30,v:6148,n:"Chop Chop (Metallic Blue)"},{i:30,v:6145,n:"Chop Chop (Series 2)"},{i:472,v:12288,n:"Chopper"},{i:3233,v:16384,n:"Clown Crusier"},{i:469,v:12288,n:"Cobra Cadabra"},{i:3010,v:8192,n:"Countdown"},{i:3010,v:8710,n:"Countdown (LightCore)"},{i:102,v:4614,n:"Crusher"},{i:3227,v:16384,n:"Crypt Crusher"},{i:32,v:0,n:"Cynder"},{i:32,v:6161,n:"Cynder (Glow in the Dark)"},{i:32,v:6145,n:"Cynder (Series 2)"},{i:3240,v:17410,n:"Dark Barrel Blaster"},{i:2004,v:9218,n:"Dark Blast"},{i:3233,v:17410,n:"Dark Clown Crusier"},{i:218,v:12312,n:"Dark Dagger (Dark Sword)"},{i:476,v:13314,n:"Dark Food Fight"},{i:3424,v:17666,n:"Dark Hammer Slam Bowser"},{i:3224,v:17410,n:"Dark Hot Streak"},{i:16,v:11266,n:"Dark Mega Ram Spyro"},{i:26,v:11266,n:"Dark Ninja Stealth Elf"},{i:3237,v:17410,n:"Dark Sea Shadow"},{i:3002,v:9218,n:"Dark Slobber Tooth"},{i:462,v:13314,n:"Dark Snap Shot"},{i:3412,v:17666,n:"Dark Spitfire"},{i:28,v:0,n:"Dark Spyro"},{i:3415,v:17666,n:"Dark Super Shot Stealth Elf"},{i:3423,v:17666,n:"Dark Turbo Charge Donkey Kong"},{i:458,v:13314,n:"Dark Wildfire"},{i:303,v:0,n:"Darklight Crypt"},{i:3422,v:16670,n:"Deep Dive Gill Grunt"},{i:468,v:12288,n:"Déjà Vu"},{i:6,v:0,n:"Dino-Rang"},{i:6,v:18448,n:"Dino-Rang (Eon's Elite)"},{i:3231,v:16384,n:"Dive Bomber"},{i:3425,v:16670,n:"Dive-Clops"},{i:2003,v:8192,n:"Doom"},{i:3497,v:16384,n:"Doom Jet"},{i:3414,v:16640,n:"Double Dare Trigger Happy"},{i:18,v:0,n:"Double Trouble"},{i:18,v:6145,n:"Double Trouble (Series 2)"},{i:3454,v:16384,n:"Dr. Krankcase"},{i:3451,v:16384,n:"Dragon Hunter"},{i:300,v:0,n:"Dragon's Peak"},{i:208,v:4614,n:"Dragonfire Cannon"},{i:21,v:0,n:"Drill Sergeant"},{i:21,v:6145,n:"Drill Sergeant (Series 2)"},{i:510,v:12288,n:"Drobit"},{i:20,v:0,n:"Drobot"},{i:20,v:4614,n:"Drobot (LightCore)"},{i:20,v:6145,n:"Drobot (Series 2)"},{i:3008,v:8192,n:"Dune Bug"},{i:465,v:12288,n:"Echo"},{i:3428,v:17677,n:"Eggcited Thrillipede"},{i:507,v:13314,n:"Eggsellent Weeruptor"},{i:301,v:0,n:"Empire of Ice"},{i:311,v:20480,n:"Enchanted Elven Forest"},{i:3009,v:9730,n:"Enchanted Star Strike"},{i:467,v:12288,n:"Enigma"},{i:9,v:0,n:"Eruptor"},{i:9,v:18448,n:"Eruptor (Eon's Elite)"},{i:9,v:4614,n:"Eruptor (LightCore)"},{i:9,v:6145,n:"Eruptor (Series 2)"},{i:9,v:6164,n:"Eruptor (White Flocked)"},{i:114,v:4614,n:"Eye-Brawl"},{i:114,v:4629,n:"Eye-Brawl (Pumpkin)"},{i:543,v:12288,n:"Eye-Small (Mini)"},{i:3301,v:8710,n:"Fiery Forge"},{i:3400,v:16640,n:"Fiesta"},{i:105,v:10245,n:"Fire Bone Hot Dog"},{i:456,v:12288,n:"Fist Bump"},{i:108,v:14341,n:"Fizzy Frenzy Pop Fizz"},{i:11,v:0,n:"Flameslinger"},{i:11,v:6146,n:"Flameslinger (Golden/Bronze)"},{i:11,v:6145,n:"Flameslinger (Series 2)"},{i:103,v:4096,n:"Flashwing"},{i:103,v:8710,n:"Flashwing (LightCore)"},{i:452,v:12288,n:"Fling Kong"},{i:464,v:12288,n:"Flip Wreck"},{i:476,v:12288,n:"Food Fight"},{i:115,v:4096,n:"Fright Rider"},{i:115,v:4113,n:"Fright Rider (Glow in the Dark)"},{i:115,v:4117,n:"Fright Rider (Halloween)"},{i:3400,v:17685,n:"Frightful Fiesta"},{i:3004,v:8192,n:"Fryno"},{i:100,v:14341,n:"Full Blast Jet-Vac"},{i:481,v:12288,n:"Funny Bone"},{i:471,v:12288,n:"Gearshift"},{i:203,v:0,n:"Ghost Pirate Swords"},{i:31,v:0,n:"Ghost Roaster"},{i:31,v:18448,n:"Ghost Roaster (Eon's Elite)"},{i:14,v:0,n:"Gill Grunt"},{i:14,v:18448,n:"Gill Grunt (Eon's Elite)"},{i:14,v:6167,n:"Gill Grunt (Metallic)"},{i:14,v:6145,n:"Gill Grunt (Series 2)"},{i:511,v:12288,n:"Gill Runt (Mini)"},{i:540,v:13314,n:"Gnarly Barkley"},{i:112,v:5634,n:"Gnarly Tree Rex"},{i:3234,v:16384,n:"Gold Rusher"},{i:208,v:5634,n:"Golden Dragonfire Cannon"},{i:3224,v:17438,n:"Golden Hot Streak"},{i:3462,v:16384,n:"Golden Queen"},{i:102,v:5634,n:"Granite Crusher"},{i:3013,v:8192,n:"Grim Creeper"},{i:3013,v:8710,n:"Grim Creeper (LightCore)"},{i:310,v:20480,n:"Gryphon Park Observatory"},{i:450,v:12288,n:"Gusto"},{i:3424,v:16670,n:"Hammer Slam Bowser"},{i:230,v:12288,n:"Hand of Fate"},{i:455,v:12288,n:"Head Rush"},{i:202,v:0,n:"Healing Elixir"},{i:111,v:10245,n:"Heavy Duty Sprocket"},{i:29,v:0,n:"Hex"},{i:29,v:4614,n:"Hex (LightCore)"},{i:29,v:6145,n:"Hex (Series 2)"},{i:201,v:0,n:"Hidden Treasure"},{i:477,v:12288,n:"High Five"},{i:3401,v:16640,n:"High Volt"},{i:504,v:12288,n:"Hijinx"},{i:3004,v:13313,n:"Hod Wild Fryno"},{i:3445,v:16384,n:"Hood Sickle"},{i:105,v:4096,n:"Hot Dog"},{i:104,v:4614,n:"Hot Head"},{i:104,v:4627,n:"Hot Head (Sparkle/Glitter)"},{i:3224,v:16384,n:"Hot Streak"},{i:3413,v:16640,n:"Hurricane Jet-Vac"},{i:7,v:10245,n:"Hyper Beam Prism Break"},{i:10,v:0,n:"Ignitor"},{i:10,v:6145,n:"Ignitor (Series 2)"},{i:103,v:5122,n:"Jade Flashwing"},{i:470,v:12288,n:"Jawbreaker"},{i:3220,v:16384,n:"Jet Stream"},{i:100,v:4096,n:"Jet-Vac"},{i:100,v:4614,n:"Jet-Vac (LightCore)"},{i:3006,v:9218,n:"Jolly Bumble Blast"},{i:459,v:12288,n:"Ka-Boom"},{i:3467,v:16384,n:"Kaos"},{i:3503,v:16384,n:"Kaos Trophy"},{i:3010,v:9218,n:"Kickoff Countdown"},{i:469,v:13314,n:"King Cobra Cadabra"},{i:482,v:12288,n:"Knight Light"},{i:484,v:12288,n:"Knight Mare"},{i:5,v:10245,n:"Knockout Terrafin"},{i:478,v:12288,n:"Krypt King"},{i:9,v:10245,n:"Lava Barf Eruptor"},{i:3421,v:16640,n:"Lava Lance Eruptor"},{i:3421,v:16670,n:"Lava Lance Eruptor (Patina)"},{i:3426,v:17667,n:"Legendary Astroblast"},{i:404,v:0,n:"Legendary Bash"},{i:453,v:13315,n:"Legendary Blades"},{i:3417,v:17667,n:"Legendary Bone Bash Roller Brawl"},{i:110,v:5635,n:"Legendary Bouncer"},{i:474,v:13315,n:"Legendary Bushwhack"},{i:106,v:5635,n:"Legendary Chill (LightCore)"},{i:430,v:0,n:"Legendary Chop Chop"},{i:468,v:13315,n:"Legendary Déjà Vu"},{i:3013,v:9731,n:"Legendary Grim Creeper"},{i:230,v:13315,n:"Legendary Hand of Fate"},{i:3413,v:17667,n:"Legendary Hurricane Jet-Vac"},{i:10,v:7171,n:"Legendary Ignitor"},{i:470,v:13315,n:"Legendary Jawbreaker"},{i:100,v:5123,n:"Legendary Jet-Vac"},{i:15,v:7171,n:"Legendary Slam Bam"},{i:416,v:0,n:"Legendary Spyro"},{i:26,v:7171,n:"Legendary Stealth Elf"},{i:3236,v:17311,n:"Legendary Sun Runner"},{i:419,v:0,n:"Legendary Trigger Happy"},{i:3007,v:9219,n:"Legendary Zoo Lou"},{i:3,v:0,n:"Lightning Rod"},{i:3,v:6164,n:"Lightning Rod (Iridescent)"},{i:3,v:6145,n:"Lightning Rod (Series 2)"},{i:463,v:12288,n:"Lob-Star"},{i:108,v:15362,n:"Love Potion Pop Fizz"},{i:16,v:10245,n:"Mega Ram Spyro"},{i:3460,v:16384,n:"Mesmeralda"},{i:308,v:12800,n:"Midnight Museum"},{i:542,v:12288,n:"Mini-Jini (Mini)"},{i:305,v:12288,n:"Mirror of Mystery"},{i:3425,v:17678,n:"Missile-Tow Dive-Clops"},{i:105,v:5122,n:"Molten Hot Dog"},{i:3452,v:16384,n:"Moneybone"},{i:3427,v:16640,n:"Nightfall"},{i:306,v:12288,n:"Nightmare Express"},{i:26,v:10245,n:"Ninja Stealth Elf"},{i:109,v:4614,n:"Ninjini"},{i:455,v:13314,n:"Nitro Head Rush"},{i:478,v:13314,n:"Nitro Krypt King"},{i:3239,v:17410,n:"Nitro Soda Skimmer"},{i:3228,v:17410,n:"Nitro Stealth Stinger"},{i:3455,v:16384,n:"Pain-Yatta"},{i:508,v:12288,n:"Pet-Vac"},{i:32,v:10245,n:"Phantom Cynder"},{i:231,v:12288,n:"Piggy Bank"},{i:302,v:0,n:"Pirate Seas"},{i:3202,v:8192,n:"Platinum Sheep"},{i:0,v:7170,n:"Polar Whirlwind"},{i:108,v:4096,n:"Pop Fizz"},{i:3001,v:8192,n:"Pop Thorn"},{i:508,v:13314,n:"Power Punch Pet-Vac"},{i:7,v:0,n:"Prism Break"},{i:7,v:4614,n:"Prism Break (LightCore)"},{i:7,v:6145,n:"Prism Break (Series 2)"},{i:108,v:5122,n:"Punch Pop Fizz"},{i:3015,v:8192,n:"Punk Shock"},{i:3222,v:16384,n:"Reef Ripper"},{i:3014,v:8192,n:"Rip Tide"},{i:232,v:12288,n:"Rocket Ram"},{i:457,v:12288,n:"Rocky Roll"},{i:3012,v:8192,n:"Roller Brawl"},{i:18,v:7170,n:"Royal Double Trouble"},{i:109,v:5634,n:"Scarlet Ninjini"},{i:209,v:4614,n:"Scorpion Striker Catapult"},{i:3000,v:8192,n:"Scratch"},{i:3237,v:16384,n:"Sea Shadow"},{i:479,v:12288,n:"Short Cut"},{i:113,v:4096,n:"Shroomboom"},{i:113,v:4614,n:"Shroomboom (LightCore)"},{i:3201,v:8192,n:"Sky Diamond"},{i:3232,v:16384,n:"Sky Slicer"},{i:205,v:0,n:"Sky-Iron Shield"},{i:15,v:0,n:"Slam Bam"},{i:15,v:18448,n:"Slam Bam (Eon's Elite)"},{i:15,v:6145,n:"Slam Bam (Series 2)"},{i:3002,v:8192,n:"Slobber Tooth"},{i:509,v:12288,n:"Small Fry"},{i:3411,v:16640,n:"Smash Hit"},{i:3005,v:8192,n:"Smolderdash"},{i:3005,v:8710,n:"Smolderdash (LightCore)"},{i:462,v:12288,n:"Snap Shot"},{i:3406,v:16654,n:"Snow-Brite Stormblade"},{i:3239,v:16384,n:"Soda Skimmer"},{i:1,v:0,n:"Sonic Boom"},{i:1,v:6161,n:"Sonic Boom (Glow in the Dark)"},{i:1,v:6145,n:"Sonic Boom (Series 2)"},{i:207,v:0,n:"Sparx the Dragonfly"},{i:483,v:12288,n:"Spotlight"},{i:19,v:11266,n:"Springtime Trigger Happy"},{i:111,v:4096,n:"Sprocket"},{i:111,v:4115,n:"Sprocket (Sparkle/Glitter)"},{i:503,v:12288,n:"Spry"},{i:16,v:0,n:"Spyro"},{i:16,v:18448,n:"Spyro (Eon's Elite)"},{i:16,v:6145,n:"Spyro (Series 2)"},{i:3009,v:8192,n:"Star Strike"},{i:3009,v:8710,n:"Star Strike (LightCore)"},{i:26,v:0,n:"Stealth Elf"},{i:26,v:18448,n:"Stealth Elf (Eon's Elite)"},{i:26,v:6145,n:"Stealth Elf (Series 2)"},{i:3228,v:16384,n:"Stealth Stinger"},{i:3412,v:16640,n:"Steel Plated Smash Hit"},{i:3406,v:16640,n:"Stormblade"},{i:27,v:0,n:"Stump Smash"},{i:27,v:6145,n:"Stump Smash (Series 2)"},{i:27,v:6164,n:"Stump Smash (White Flocked)"},{i:3236,v:16384,n:"Sun Runner"},{i:8,v:0,n:"Sunburn"},{i:307,v:12800,n:"Sunscraper Spire"},{i:108,v:10245,n:"Super Gulp Pop Fizz"},{i:3415,v:16640,n:"Super Shot Stealth Elf"},{i:113,v:14337,n:"Sure Shot Shroomboom"},{i:101,v:4614,n:"Swarm"},{i:505,v:12288,n:"Terrabite (Mini)"},{i:5,v:0,n:"Terrafin"},{i:5,v:18448,n:"Terrafin (Eon's Elite)"},{i:5,v:6145,n:"Terrafin (Series 2)"},{i:3465,v:16384,n:"The Gulper"},{i:220,v:12318,n:"The Kaos Trap"},{i:24,v:10245,n:"Thorn Horn Camo"},{i:3428,v:16640,n:"Thrillipede"},{i:3226,v:16384,n:"Thump Truck"},{i:107,v:4614,n:"Thumpback"},{i:541,v:12288,n:"Thumpling (Mini)"},{i:451,v:12288,n:"Thunderbolt"},{i:451,v:12317,n:"Thunderbolt (Clear)"},{i:14,v:14345,n:"Tidal Wave Gill Grunt"},{i:233,v:12288,n:"Tiki Speaky"},{i:204,v:0,n:"Time Twister Hourglass"},{i:3221,v:16384,n:"Tomb Buggy"},{i:461,v:12288,n:"Torch"},{i:3301,v:8192,n:"Tower of Time"},{i:460,v:12288,n:"Trail Blazer"},{i:473,v:12288,n:"Tread Head"},{i:112,v:4614,n:"Tree Rex"},{i:19,v:0,n:"Trigger Happy"},{i:19,v:18448,n:"Trigger Happy (Eon's Elite)"},{i:19,v:6145,n:"Trigger Happy (Series 2)"},{i:519,v:12288,n:"Trigger Snappy (Mini)"},{i:475,v:12288,n:"Tuff Luck"},{i:3423,v:16670,n:"Turbo Charge Donkey Kong"},{i:100,v:10245,n:"Turbo Jet-Vac"},{i:30,v:10245,n:"Twin Blade Chop Chop"},{i:220,v:13343,n:"Ultimate Kaos Trap"},{i:9,v:11266,n:"Volcanic Eruptor"},{i:304,v:0,n:"Volcanic Vault"},{i:17,v:0,n:"Voodood"},{i:17,v:18448,n:"Voodood (Eon's Elite)"},{i:454,v:12288,n:"Wallop"},{i:2,v:0,n:"Warnado"},{i:2,v:8710,n:"Warnado (LightCore)"},{i:507,v:12288,n:"Weeruptor"},{i:13,v:0,n:"Wham-Shell"},{i:13,v:8710,n:"Wham-Shell (LightCore)"},{i:0,v:0,n:"Whirlwind"},{i:0,v:18448,n:"Whirlwind (Eon's Elite)"},{i:0,v:6145,n:"Whirlwind (Series 2)"},{i:0,v:6162,n:"Whirlwind (Stone)"},{i:526,v:12288,n:"Whisper Elf (Mini)"},{i:458,v:12288,n:"Wildfire"},{i:3011,v:8192,n:"Wind-Up"},{i:206,v:0,n:"Winged Boots"},{i:463,v:13314,n:"Winterfest Lob-Star"},{i:3443,v:16384,n:"Wolfgang"},{i:23,v:0,n:"Wrecking Ball"},{i:23,v:6164,n:"Wrecking Ball (Iridescent)"},{i:23,v:6145,n:"Wrecking Ball (Series 2)"},{i:12,v:0,n:"Zap"},{i:12,v:6145,n:"Zap (Series 2)"},{i:3007,v:8192,n:"Zoo Lou"},{i:25,v:0,n:"Zook"},{i:25,v:18448,n:"Zook (Eon's Elite)"},{i:25,v:6145,n:"Zook (Series 2)"}
+];
+
+let apiMap = {};
+let selectedDump = null;
+let searchTerm = "";
+
+
+async function loadApiMap() {
+  try {
+    const res = await fetch(API_BASE + "/figures.json");
+    if(!res.ok) return;
+    const data = await res.json();
+    data.figures.forEach(f => {
+      apiMap[f.slug.toLowerCase()] = f.image_path;
+      const key = f.name.toLowerCase().replace(/[^a-z0-9]/g, "");
+      apiMap[key] = f.image_path;
+    });
+  } catch (e) {
+    console.warn("API Skylanders non joignable. Les images ne s'afficheront pas.");
+  }
+}
+
+function getImagePath(name) {
+  const key = name.toLowerCase().replace(/[^a-z0-9]/g, "");
+  const base = name.split("(")[0].trim().toLowerCase().replace(/[^a-z0-9]/g, "");
+  return apiMap[key] || apiMap[base] || null;
+}
+
+// ─────────────────────────────────────────────
+// AFFICHAGE DE LA LISTE
+// ─────────────────────────────────────────────
+function renderList() {
+  const list = document.getElementById("figList");
+  const count = document.getElementById("figCount");
+  const q = searchTerm.toLowerCase();
+
+  const filtered = searchTerm
+    ? DUMP_LIST.filter(d => d.n.toLowerCase().includes(q))
+    : DUMP_LIST;
+
+  if (filtered.length === 0) {
+    list.innerHTML = `<div class="fig-status">Aucune figurine trouvée</div>`;
+    return;
+  }
+
+  const MAX_SHOW = 100;
+  const show = filtered.slice(0, MAX_SHOW);
+  let html = "";
+
+  show.forEach(d => {
+    const isSelected = selectedDump && selectedDump.i === d.i && selectedDump.v === d.v;
+    const imgPath = getImagePath(d.n);
+    const imgHtml = imgPath
+      ? `<img src="${IMG_BASE}${imgPath}" alt="" loading="lazy" />`
+      : `<span>?</span>`;
+
+    const idHex = d.i.toString(16).padStart(4,"0").toUpperCase();
+    const vHex  = d.v.toString(16).padStart(4,"0").toUpperCase();
+
+    html += `
+      <div class="fig-item ${isSelected ? "selected" : ""}" tabindex="0"
+           onclick="selectFig(${d.i}, ${d.v}, '${d.n.replace(/'/g, "\\'")}')"
+           onkeypress="if(event.key === 'Enter') selectFig(${d.i}, ${d.v}, '${d.n.replace(/'/g, "\\'")}')">
+        <div class="fig-thumb">${imgHtml}</div>
+        <div class="fig-info">
+          <div class="fig-name">${highlight(d.n, searchTerm)}</div>
+          <div class="fig-id">ID: ${idHex} | VAR: ${vHex}</div>
+        </div>
+      </div>`;
+  });
+
+  if (filtered.length > MAX_SHOW) {
+    html += `<div class="fig-status">Affichage de ${MAX_SHOW} sur ${filtered.length} — affinez votre recherche</div>`;
+  }
+
+  list.innerHTML = html;
+}
+
+function highlight(str, q) {
+  if (!q) return str;
+  const re = new RegExp(`(${q.replace(/[.*+?^${}()|[\]\\]/g,"\\$&")})`, "gi");
+  return str.replace(re, `<mark style="background:var(--portal-cyan);color:#000;border-radius:3px">$1</mark>`);
+}
+
+// ─────────────────────────────────────────────
+// SÉLECTION
+// ─────────────────────────────────────────────
+function selectFig(i, v, n) {
+  const dump = DUMP_LIST.find(d => d.i === i && d.v === v && d.n === n);
+  if (!dump) return;
+  selectedDump = dump;
+
+  // Mise à jour de l'interface du Portail
+  const imgPath = getImagePath(dump.n);
+  const previewImg = document.getElementById("previewImg");
+  const portalRing = document.getElementById("portalRing");
+
+  if (imgPath) {
+    previewImg.src = IMG_BASE + imgPath;
+    previewImg.style.display = "block";
+  } else {
+    previewImg.style.display = "none";
+  }
+
+  portalRing.classList.add("active");
+  document.getElementById("previewName").textContent = dump.n;
+  document.getElementById("previewMeta").innerHTML = `ID <strong>${dump.i.toString(16).padStart(4,"0").toUpperCase()}</strong> — VAR <strong>${dump.v.toString(16).padStart(4,"0").toUpperCase()}</strong>`;
+
+  renderList();
+  checkReady();
+}
+
+document.getElementById("searchInput").addEventListener("input", e => {
+  searchTerm = e.target.value.trim();
+  renderList();
+});
+
+// ─────────────────────────────────────────────
+// GESTION DE L'UID
+// ─────────────────────────────────────────────
+const uidInput = document.getElementById("uidInput");
+const uidHint  = document.getElementById("uidHint");
+
+function validateUid(v) {
+  return /^[0-9A-Fa-f]{8}$/.test(v);
+}
+function randomUid() {
+  const chars = "0123456789ABCDEF";
+  let s = "";
+  for (let i = 0; i < 8; i++) s += chars[Math.floor(Math.random() * 16)];
+  return s;
+}
+
+uidInput.addEventListener("input", () => {
+  const v = uidInput.value;
+  uidInput.classList.remove("valid", "invalid");
+  
+  if (v.length === 0) {
+    uidHint.textContent = "8 caractères hexadécimaux — A–F, 0–9";
+    uidHint.className = "uid-feedback";
+  } else if (validateUid(v)) {
+    uidHint.textContent = "✓ UID Valide";
+    uidHint.className = "uid-feedback ok";
+    uidInput.classList.add("valid");
+  } else if (v.length === 8) {
+    uidHint.textContent = "✗ Seuls les caractères hexadécimaux sont autorisés";
+    uidHint.className = "uid-feedback err";
+    uidInput.classList.add("invalid");
+  } else {
+    uidHint.textContent = `${v.length}/8 caractères`;
+    uidHint.className = "uid-feedback";
+  }
+  checkReady();
+});
+
+document.getElementById("randomBtn").addEventListener("click", () => {
+  uidInput.value = randomUid();
+  uidInput.dispatchEvent(new Event("input"));
+});
+
+// ─────────────────────────────────────────────
+// VALIDATION ET GÉNÉRATION DU DUMP
+// ─────────────────────────────────────────────
+function checkReady() {
+  const btn = document.getElementById("downloadBtn");
+  const ready = selectedDump && validateUid(uidInput.value);
+  
+  if (ready) {
+    btn.classList.remove("disabled");
+    btn.setAttribute("aria-disabled", "false");
+    btn.textContent = `Télécharger le Dump`;
+  } else {
+    btn.classList.add("disabled");
+    btn.setAttribute("aria-disabled", "true");
+    btn.textContent = "Générer le Dump";
+  }
+}
+
+function slugify(n) {
+  return n.replace(/ /g,"_").replace(/[^\w]/g,"").replace(/_{2,}/g,"_").replace(/_+$/,"").toLowerCase().slice(0,24);
+}
+
+// ─────────────────────────────────────────────
+// CRYPTOGRAPHIE ORIGINALE DU FICHIER (Intacte)
+// ─────────────────────────────────────────────
+class Long {
+  constructor(low, high) {
+    this.TWO_PWR_16_DBL = 65536;
+    this.TWO_PWR_32_DBL = this.TWO_PWR_16_DBL * this.TWO_PWR_16_DBL;
+    this.low  = 0 | low;
+    this.high = 0 | high;
+  }
+  fromNumber(n) { return n < 0 ? this.fromNumber(-n).neg() : new Long(n % this.TWO_PWR_32_DBL | 0, n / this.TWO_PWR_32_DBL | 0); }
+  neg() { return new Long(~this.low, ~this.high).add(new Long(1, 0)); }
+  add(n) {
+    let e=this.high>>>16, r=65535&this.high, a=this.low>>>16, v=65535&this.low;
+    let t=n.high>>>16, o=65535&n.high, l=n.low>>>16, h=0, s=0, S=0, d=0;
+    S += (d += v+(65535&n.low)) >>> 16;
+    s += (S += a+l) >>> 16;
+    h += (s += r+o) >>> 16;
+    h += e+t;
+    return new Long((S &= 65535)<<16|(d &= 65535),(h &= 65535)<<16|(s &= 65535));
+  }
+  shiftLeft(n) { return 0==(n&=63)?this:n<32?new Long(this.low<<n,this.high<<n|this.low>>>(32-n)):new Long(0,this.low<<(n-32)); }
+  xor(n) { return new Long(this.low^n.low, this.high^n.high); }
+  and(n) { return new Long(this.low&n.low, this.high&n.high); }
+  equals(n) { return this.high===n.high&&this.low===n.low; }
+  toBytesLE() { let i=this.high,n=this.low; return [255&n,n>>>8&255,n>>>16&255,n>>>24,255&i,i>>>8&255,i>>>16&255,i>>>24]; }
+  toBytesBE() { let i=this.high,n=this.low; return [i>>>24,i>>>16&255,i>>>8&255,255&i,n>>>24,n>>>16&255,n>>>8&255,255&n]; }
+}
+
+const PRIMES = [2,3,73,1103,2017,560381651,12868356821];
+
+function computeBlock(uid, page) {
+  if (page === 0) return (new Long).fromNumber(PRIMES[2]*PRIMES[4]*PRIMES[5]).toBytesBE().slice(2);
+  const seed = PRIMES[0]*PRIMES[0]*PRIMES[1]*PRIMES[3]*PRIMES[6];
+  const data = new Uint8Array(uid.length+1);
+  data.set(uid); data.set(new Uint8Array([page]), uid.length);
+  let n = (new Long).fromNumber(seed);
+  const poly = new Long(2850698899,1123082731), mask = new Long(0,32768), trim = new Long(4294967295,65535);
+  for (let i=0;i<data.length;i++) {
+    n = n.xor((new Long).fromNumber(data[i]).shiftLeft(40));
+    for (let j=0;j<8;j++) {
+      n = (n.and(mask).equals(mask) ? n.shiftLeft(1).xor(poly) : n.shiftLeft(1)).and(trim);
+    }
+  }
+  return n.toBytesLE().slice(0,6);
+}
+
+function buildDump(uid, iBytes, vBytes) {
+  const v = new Uint8Array(1024);
+  v[0]=uid[0]; v[1]=uid[1]; v[2]=uid[2]; v[3]=uid[3];
+  
+  let xc = 0; for (let i=0;i<4;i++) xc ^= uid[i];
+  v[4]=xc; v[5]=129; v[6]=1; v[7]=15;
+  v[17]=iBytes[0]; v[16]=iBytes[1]; v[29]=vBytes[0]; v[28]=vBytes[1];
+  
+  let crc=65535;
+  for (let i=0;i<30;i++) {
+    let b=v[i];
+    for (let j=0;j<8;j++) {
+      const top = 1==(crc>>15&1);
+      crc <<= 1;
+      if (top ^ (1==(b>>7-j&1))) crc ^= 4129;
+    }
+  }
+  crc &= 65535;
+  v[30]=255&crc; v[31]=crc>>8&255;
+  
+  let page=0;
+  for (let r=48;r<v.length;r+=64) {
+    const blk = computeBlock(uid, page);
+    for (let i=0;i<blk.length;i++) v[r+i]=blk[i];
+    const marker = (new Long).fromNumber(page===0?4278681705:2131691625).toBytesBE().slice(4);
+    for (let i=0;i<marker.length;i++) v[r+6+i]=marker[i];
+    page++;
+  }
+  return v;
+}
+
+// ─────────────────────────────────────────────
+// TÉLÉCHARGEMENT
+// ─────────────────────────────���───────────────
+document.getElementById("downloadBtn").addEventListener("click", function(e) {
+  if (this.classList.contains("disabled") || !selectedDump || !validateUid(uidInput.value)) {
+    e.preventDefault();
+    return;
+  }
+
+  const uid = uidInput.value.toUpperCase();
+  const uidBytes = Uint8Array.from(uid.match(/.{1,2}/g).map(b => parseInt(b, 16)));
+  const iBytes   = Uint8Array.from(selectedDump.i.toString(16).padStart(4,"0").match(/.{1,2}/g).map(b => parseInt(b,16)));
+  const vBytes   = Uint8Array.from(selectedDump.v.toString(16).padStart(4,"0").match(/.{1,2}/g).map(b => parseInt(b,16)));
+
+  const dump = buildDump(uidBytes, iBytes, vBytes);
+  const blob = new Blob([dump], { type: "application/octet-stream" });
+  const url  = URL.createObjectURL(blob);
+
+  this.href     = url;
+  this.download = `${uid}_${slugify(selectedDump.n)}.dump`;
+
+  setTimeout(() => URL.revokeObjectURL(url), 5000);
+});
+
+// ─────────────────────────────────────────────
+// INITIALISATION
+// ─────────────────────────────────────────────
+async function init() {
+  await loadApiMap();
+  renderList();
+  
+  // Générer un UID aléatoire par défaut pour faciliter l'UX
+  if (!uidInput.value) {
+    uidInput.value = randomUid();
+    uidInput.dispatchEvent(new Event("input"));
+  }
+}
+
+init();
+</script>
+</body>
+</html>
