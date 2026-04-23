@@ -3,50 +3,54 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>SkyDumps</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Luckiest+Guy&family=Nunito:wght@400;600;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+  <title>SkyDumps - Générateur</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
   <style>
     :root {
-      /* Couleurs Clean Dark / Stone Theme */
-      --bg-main: #0f172a;
-      --bg-panel: #1e293b;
-      --bg-hover: #334155;
-      --border-color: #475569;
+      --bg-body: #f1f5f9;
+      --bg-surface: #ffffff;
+      --bg-hover: #f8fafc;
+      --bg-active: #eff6ff;
       
-      --primary: #3b82f6;
-      --primary-hover: #2563eb;
-      --gold: #fbbf24;
-      --gold-hover: #f59e0b;
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+      --text-light: #94a3b8;
       
-      --text-main: #f8fafc;
-      --text-muted: #94a3b8;
+      --border-color: #e2e8f0;
+      --border-focus: #3b82f6;
+      
+      --primary: #2563eb;
+      --primary-hover: #1d4ed8;
+      --primary-disabled: #93c5fd;
       
       --error: #ef4444;
       --success: #10b981;
       
-      --font-title: 'Luckiest Guy', cursive;
-      --font-body: 'Nunito', sans-serif;
-      --font-mono: 'Space Mono', monospace;
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 16px;
       
-      --radius: 12px;
       --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-      --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-      --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+      --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.05), 0 2px 4px -2px rgb(0 0 0 / 0.05);
+      
+      --font-sans: 'Inter', system-ui, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
-      font-family: var(--font-body);
-      background-color: var(--bg-main);
+      font-family: var(--font-sans);
+      background-color: var(--bg-body);
       color: var(--text-main);
       min-height: 100vh;
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: 2rem 1rem;
+      padding: 3rem 1rem;
+      line-height: 1.5;
     }
 
     /* ── EN-TÊTE ── */
@@ -54,330 +58,350 @@
       text-align: center;
       margin-bottom: 2.5rem;
     }
-    .title {
-      font-family: var(--font-title);
-      font-size: 3rem;
-      color: var(--gold);
-      letter-spacing: 1.5px;
-      margin-bottom: 0.25rem;
-      text-shadow: 2px 2px 0 #000;
+    .header h1 {
+      font-size: 2.25rem;
+      font-weight: 800;
+      letter-spacing: -0.025em;
+      color: var(--text-main);
     }
-    .subtitle {
-      font-size: 1rem;
+    .header p {
       color: var(--text-muted);
-      font-weight: 600;
+      font-size: 1.1rem;
+      margin-top: 0.25rem;
     }
 
-    /* ── MISE EN PAGE PRINCIPALE ── */
-    .container {
+    /* ── CONTENEUR PRINCIPAL ── */
+    .app-container {
       display: grid;
-      grid-template-columns: 1fr 1fr;
+      grid-template-columns: 350px 450px;
       gap: 1.5rem;
-      width: 100%;
-      max-width: 900px;
+      max-width: 100%;
+      align-items: stretch;
     }
-    @media (max-width: 768px) {
-      .container { grid-template-columns: 1fr; }
+
+    @media (max-width: 850px) {
+      .app-container {
+        grid-template-columns: 1fr;
+        width: 100%;
+        max-width: 450px;
+      }
     }
 
     /* ── PANNEAUX ── */
     .panel {
-      background-color: var(--bg-panel);
+      background-color: var(--bg-surface);
       border: 1px solid var(--border-color);
-      border-radius: var(--radius);
-      padding: 1.5rem;
-      box-shadow: var(--shadow-md);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-sm);
       display: flex;
       flex-direction: column;
-    }
-    .panel-title {
-      font-family: var(--font-title);
-      font-size: 1.25rem;
-      color: var(--text-main);
-      margin-bottom: 1rem;
-      letter-spacing: 0.5px;
-      border-bottom: 2px solid var(--border-color);
-      padding-bottom: 0.5rem;
+      overflow: hidden;
     }
 
-    /* ── RECHERCHE & LISTE ── */
-    .search-box {
-      position: relative;
-      margin-bottom: 1rem;
+    .panel-header {
+      padding: 1.25rem 1.5rem;
+      border-bottom: 1px solid var(--border-color);
+      background-color: var(--bg-surface);
+      z-index: 10;
     }
+
+    .panel-title {
+      font-size: 1.125rem;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    /* ── LISTE DE FIGURINES (GAUCHE) ── */
     .search-input {
       width: 100%;
-      background-color: var(--bg-main);
+      margin-top: 1rem;
+      padding: 0.75rem 1rem;
       border: 1px solid var(--border-color);
-      border-radius: 8px;
-      padding: 0.75rem 1rem 0.75rem 2.5rem;
+      border-radius: var(--radius-sm);
+      font-family: var(--font-sans);
+      font-size: 0.95rem;
       color: var(--text-main);
-      font-family: var(--font-body);
-      font-size: 1rem;
-      transition: border-color 0.2s;
+      background-color: var(--bg-body);
+      transition: all 0.2s;
     }
     .search-input:focus {
       outline: none;
-      border-color: var(--primary);
-    }
-    .search-icon {
-      position: absolute;
-      left: 12px;
-      top: 50%;
-      transform: translateY(-50%);
-      font-size: 1.1rem;
-      color: var(--text-muted);
+      border-color: var(--border-focus);
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+      background-color: var(--bg-surface);
     }
 
-    .fig-list {
+    .list-container {
       flex: 1;
-      background-color: var(--bg-main);
-      border: 1px solid var(--border-color);
-      border-radius: 8px;
-      max-height: 400px;
       overflow-y: auto;
-      scrollbar-width: thin;
-      scrollbar-color: var(--border-color) var(--bg-main);
-    }
-    .fig-list::-webkit-scrollbar { width: 6px; }
-    .fig-list::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 6px; }
-
-    .fig-item {
-      display: flex;
-      align-items: center;
-      padding: 0.75rem;
-      gap: 1rem;
-      cursor: pointer;
-      border-bottom: 1px solid var(--border-color);
-      transition: background-color 0.1s;
-    }
-    .fig-item:last-child { border-bottom: none; }
-    .fig-item:hover, .fig-item:focus {
-      background-color: var(--bg-hover);
-      outline: none;
-    }
-    .fig-item.selected {
-      background-color: rgba(59, 130, 246, 0.15); /* var(--primary) avec opacité */
+      max-height: 500px;
+      background-color: var(--bg-surface);
     }
     
-    /* Vignette ronde "Clean" */
-    .fig-thumb {
+    /* Scrollbar discrète */
+    .list-container::-webkit-scrollbar { width: 6px; }
+    .list-container::-webkit-scrollbar-track { background: transparent; }
+    .list-container::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+    .list-container::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+    .list-item {
+      display: flex;
+      align-items: center;
+      padding: 0.75rem 1.5rem;
+      border-bottom: 1px solid var(--border-color);
+      cursor: pointer;
+      transition: background-color 0.15s;
+    }
+    .list-item:hover { background-color: var(--bg-hover); }
+    .list-item.selected {
+      background-color: var(--bg-active);
+      border-left: 4px solid var(--primary);
+      padding-left: calc(1.5rem - 4px);
+    }
+
+    /* Les miniatures carrées à fond blanc qui absorbent les images avec fond blanc */
+    .item-thumb {
       width: 48px;
       height: 48px;
       flex-shrink: 0;
-      background-color: #fff; /* Fond blanc pour faire ressortir les personnages */
-      border-radius: 50%;
+      background-color: #ffffff;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-sm);
       display: flex;
       justify-content: center;
       align-items: center;
-      overflow: hidden;
-      border: 2px solid var(--border-color);
-    }
-    /* object-fit: contain avec un petit padding pour que le personnage rentre parfaitement dans le rond sans être coupé */
-    .fig-thumb img { 
-      width: 100%; 
-      height: 100%; 
-      object-fit: contain; 
+      margin-right: 1rem;
       padding: 4px;
     }
-    
-    .fig-info { flex: 1; }
-    .fig-name { font-weight: 800; font-size: 0.95rem; margin-bottom: 0.15rem; }
-    .fig-id { font-family: var(--font-mono); font-size: 0.75rem; color: var(--text-muted); }
-    .fig-status { padding: 1.5rem; text-align: center; color: var(--text-muted); font-size: 0.9rem; }
+    .item-thumb img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain; /* L'image garde ses proportions sans être coupée */
+    }
 
-    /* ── CÔTÉ DROIT : PARAMÈTRES & GÉNÉRATION ── */
-    .portal-container {
+    .item-info { flex: 1; min-width: 0; }
+    .item-name {
+      font-weight: 600;
+      font-size: 0.9rem;
+      color: var(--text-main);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .item-meta {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-top: 0.15rem;
+    }
+    .list-status {
+      padding: 2rem;
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+
+    /* Highlight de recherche */
+    mark { background-color: #fef08a; color: #854d0e; border-radius: 2px; padding: 0 2px; }
+
+    /* ── APERÇU ET GÉNÉRATION (DROITE) ── */
+    .config-content {
+      padding: 1.5rem;
       display: flex;
       flex-direction: column;
-      gap: 1.5rem;
+      gap: 2rem;
+      height: 100%;
+    }
+
+    .preview-section {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      padding: 1.5rem;
+      background-color: var(--bg-body);
+      border-radius: var(--radius-md);
+      border: 1px dashed #cbd5e1;
     }
     
-    .selected-preview {
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-      background-color: var(--bg-main);
-      padding: 1rem;
-      border-radius: 8px;
+    .preview-image-wrapper {
+      width: 120px;
+      height: 120px;
+      background-color: #ffffff;
       border: 1px solid var(--border-color);
-    }
-    .preview-img-wrapper {
-      width: 64px;
-      height: 64px;
-      background-color: #fff;
-      border-radius: 50%;
-      border: 2px solid var(--border-color);
+      border-radius: var(--radius-sm);
       display: flex;
       justify-content: center;
       align-items: center;
+      margin-bottom: 1rem;
+      padding: 8px;
+      box-shadow: var(--shadow-sm);
     }
-    .preview-img-wrapper img {
+    .preview-image-wrapper img {
       width: 100%;
       height: 100%;
       object-fit: contain;
-      padding: 5px;
     }
-    .selected-info h3 { font-size: 1.1rem; margin-bottom: 0.25rem; }
-    .selected-info p { font-family: var(--font-mono); color: var(--text-muted); font-size: 0.85rem; }
+    
+    .preview-placeholder {
+      font-size: 3rem;
+      color: #cbd5e1;
+    }
 
-    /* Paramètres (UID) */
-    .settings-group {
+    .preview-name { font-size: 1.125rem; font-weight: 700; color: var(--text-main); margin-bottom: 0.25rem;}
+    .preview-id { font-family: var(--font-mono); font-size: 0.85rem; color: var(--text-muted); }
+
+    .form-group {
       display: flex;
       flex-direction: column;
       gap: 0.5rem;
     }
-    .settings-group label {
-      font-weight: 800;
-      color: var(--text-main);
+    .form-label {
       font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--text-main);
     }
-    .settings-group .help-text {
+    .form-help {
       font-size: 0.8rem;
       color: var(--text-muted);
-      margin-bottom: 0.25rem;
+      margin-bottom: 0.5rem;
     }
+    
     .uid-input {
       width: 100%;
-      background-color: var(--bg-main);
-      border: 2px solid var(--border-color);
-      border-radius: 8px;
-      padding: 0.85rem;
-      color: var(--text-main);
+      padding: 0.875rem 1rem;
       font-family: var(--font-mono);
-      font-size: 1.25rem;
-      text-transform: uppercase;
-      letter-spacing: 2px;
-      text-align: center;
-      transition: border-color 0.2s;
-    }
-    .uid-input:focus { outline: none; border-color: var(--primary); }
-    .uid-input.valid { border-color: var(--success); }
-    .uid-input.invalid { border-color: var(--error); }
-
-    .uid-feedback {
-      font-size: 0.85rem;
-      font-weight: 600;
-      text-align: center;
-      min-height: 1.2rem;
-    }
-    .uid-feedback.ok { color: var(--success); }
-    .uid-feedback.err { color: var(--error); }
-
-    /* Bouton Téléchargement */
-    .btn-download {
-      display: block;
-      width: 100%;
-      background-color: var(--primary);
-      color: #fff;
-      border: none;
-      border-radius: 8px;
-      padding: 1rem;
-      font-family: var(--font-body);
-      font-weight: 800;
       font-size: 1.1rem;
+      text-align: center;
+      letter-spacing: 0.1em;
       text-transform: uppercase;
-      letter-spacing: 1px;
+      color: var(--text-main);
+      background-color: var(--bg-surface);
+      border: 2px solid var(--border-color);
+      border-radius: var(--radius-sm);
+      transition: all 0.2s;
+    }
+    .uid-input:focus {
+      outline: none;
+      border-color: var(--border-focus);
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+    .uid-input.is-valid { border-color: var(--success); }
+    .uid-input.is-invalid { border-color: var(--error); }
+
+    .uid-message {
+      font-size: 0.85rem;
+      font-weight: 500;
+      text-align: center;
+      min-height: 1.25rem;
+    }
+    .text-success { color: var(--success); }
+    .text-error { color: var(--error); }
+
+    .btn-submit {
+      width: 100%;
+      padding: 1rem;
+      background-color: var(--primary);
+      color: #ffffff;
+      border: none;
+      border-radius: var(--radius-sm);
+      font-family: var(--font-sans);
+      font-size: 1rem;
+      font-weight: 600;
       cursor: pointer;
       text-decoration: none;
       text-align: center;
       transition: background-color 0.2s;
+      margin-top: auto;
     }
-    .btn-download:hover:not(.disabled) { background-color: var(--primary-hover); }
-    .btn-download.disabled {
+    .btn-submit:hover:not(.disabled) { background-color: var(--primary-hover); }
+    .btn-submit.disabled {
       background-color: var(--border-color);
-      color: var(--text-muted);
+      color: var(--text-light);
       cursor: not-allowed;
       pointer-events: none;
     }
 
-    /* ── BADGES INFO ── */
-    .badges {
+    /* ── BADGES ── */
+    .info-footer {
       display: flex;
-      flex-wrap: wrap;
       justify-content: center;
-      gap: 0.5rem;
+      gap: 1rem;
       margin-top: 1.5rem;
-    }
-    .badge {
-      background-color: var(--bg-main);
-      border: 1px solid var(--border-color);
-      padding: 0.25rem 0.75rem;
-      border-radius: 9999px;
-      font-size: 0.75rem;
-      font-weight: 600;
+      font-size: 0.8rem;
       color: var(--text-muted);
     }
+    .info-item { display: flex; align-items: center; gap: 0.25rem; }
+    .icon-check { color: var(--success); }
+    .icon-cross { color: var(--error); }
   </style>
 </head>
 <body>
 
   <header class="header">
-    <h1 class="title">SkyDumps</h1>
-    <div class="subtitle">Générateur de fichiers de sauvegarde</div>
+    <h1>SkyDumps</h1>
+    <p>Générateur de fichiers de sauvegarde (.dump)</p>
   </header>
 
-  <main class="container">
+  <main class="app-container">
     
     <!-- COLONNE GAUCHE : SÉLECTION -->
     <section class="panel">
-      <h2 class="panel-title">1. Sélection du personnage</h2>
-      
-      <div class="search-box">
-        <span class="search-icon">🔍</span>
-        <input type="text" id="searchInput" class="search-input" placeholder="Rechercher une figurine..." autocomplete="off" />
+      <div class="panel-header">
+        <h2 class="panel-title">1. Sélection du personnage</h2>
+        <input type="text" id="searchInput" class="search-input" placeholder="Rechercher une figurine..." autocomplete="off" spellcheck="false" />
       </div>
 
-      <div class="fig-list" id="figList">
-        <div class="fig-status" id="figCount">Chargement des données...</div>
+      <div class="list-container" id="figList">
+        <div class="list-status">Chargement de la base de données...</div>
       </div>
     </section>
 
-    <!-- COLONNE DROITE : PARAMÈTRES & GÉNÉRATION -->
+    <!-- COLONNE DROITE : CONFIGURATION -->
     <section class="panel">
-      <h2 class="panel-title">2. Configuration</h2>
-      
-      <div class="portal-container">
-        
-        <!-- Aperçu de la sélection -->
-        <div class="selected-preview">
-          <div class="preview-img-wrapper">
-            <img id="previewImg" src="" alt="" style="display: none;" />
-          </div>
-          <div class="selected-info">
-            <h3 id="previewName">Aucune figurine sélectionnée</h3>
-            <p id="previewMeta">Sélectionnez un personnage dans la liste</p>
-          </div>
-        </div>
-
-        <!-- Paramètres UID -->
-        <div class="settings-group">
-          <label for="uidInput">UID de la carte (Identifiant Unique)</label>
-          <div class="help-text">Saisissez l'UID exact de la carte NFC sur laquelle vous allez écrire le fichier.</div>
-          <input type="text" id="uidInput" class="uid-input" placeholder="Ex: 041A2B3C" maxlength="8" spellcheck="false" />
-          <div class="uid-feedback" id="uidHint">8 caractères hexadécimaux requis.</div>
-        </div>
-
-        <!-- Bouton de génération -->
-        <a id="downloadBtn" class="btn-download disabled" href="#">
-          Générer le Dump
-        </a>
+      <div class="panel-header">
+        <h2 class="panel-title">2. Configuration de la puce</h2>
       </div>
+      
+      <div class="config-content">
+        <!-- Aperçu de la figurine sélectionnée -->
+        <div class="preview-section">
+          <div class="preview-image-wrapper">
+            <div id="previewPlaceholder" class="preview-placeholder">?</div>
+            <img id="previewImg" src="" alt="Aperçu" style="display: none;" />
+          </div>
+          <div id="previewName" class="preview-name">Aucune sélection</div>
+          <div id="previewMeta" class="preview-id">Veuillez choisir un personnage à gauche</div>
+        </div>
 
-      <!-- Badges d'information -->
-      <div class="badges">
-        <span class="badge">✓ Émulateurs</span>
-        <span class="badge">✓ Console via NFC</span>
-        <span class="badge">✗ Imaginators non supporté</span>
+        <!-- Saisie de l'UID -->
+        <div class="form-group">
+          <label class="form-label" for="uidInput">UID de la carte NFC</label>
+          <p class="form-help">Saisissez les 8 caractères hexadécimaux inscrits sur votre carte vierge.</p>
+          <input type="text" id="uidInput" class="uid-input" placeholder="Ex: 041A2B3C" maxlength="8" autocomplete="off" spellcheck="false" />
+          <div class="uid-message" id="uidHint"></div>
+        </div>
+
+        <!-- Bouton Téléchargement -->
+        <a id="downloadBtn" class="btn-submit disabled" href="#">
+          Générer le fichier .dump
+        </a>
       </div>
     </section>
 
   </main>
 
+  <div class="info-footer">
+    <span class="info-item"><span class="icon-check">✔</span> Émulateurs</span>
+    <span class="info-item"><span class="icon-check">✔</span> Console via carte NFC</span>
+    <span class="info-item"><span class="icon-cross">✖</span> Imaginators non supporté</span>
+  </div>
+
 <script>
 const API_BASE = "https://modernskylanders.github.io/api-skylanders";
 const IMG_BASE = API_BASE + "/images/";
 
+// Base de données des figurines
 const DUMP_LIST = [
   {i:14,v:10245,n:"Anchors Away Gill Grunt"},{i:200,v:0,n:"Anvil Rain"},{i:211,v:12299,n:"Aqua Axe (Water Axe)"},{i:210,v:12302,n:"Arcane Hourglass (Magic Hourglass)"},{i:3302,v:8710,n:"Arkeyan Crossbow"},{i:3426,v:16640,n:"Astroblast"},{i:214,v:12295,n:"Automatic Angel (Tech Angel)"},{i:210,v:12299,n:"Axe of Illusion (Magic Axe)"},{i:3446,v:16384,n:"Bad Juju"},{i:3476,v:16384,n:"Bad Juju Vehicle"},{i:216,v:12292,n:"Banded Boulder (Earth Orb)"},{i:540,v:12288,n:"Barkley (Mini)"},{i:540,v:4096,n:"Barkley (Sidekick)"},{i:3240,v:16384,n:"Barrel Blaster"},{i:4,v:0,n:"Bash"},{i:4,v:6145,n:"Bash (Series 2)"},{i:480,v:12288,n:"Bat Spin"},{i:3200,v:8192,n:"Battle Hammer"},{i:219,v:12315,n:"Beam Scream (Light Yawn)"},{i:19,v:10245,n:"Big Bang Trigger Happy"},{i:3420,v:16640,n:"Big Bubble Pop Fizz"},{i:3420,v:17678,n:"Birthday Bash Big Bubble Pop Fizz"},{i:210,v:12290,n:"Biter's Bane (Magic Log Holder)"},{i:485,v:12288,n:"Blackout"},{i:1014,v:8192,n:"Blade"},{i:453,v:12288,n:"Blades"},{i:2004,v:8192,n:"Blast"},{i:466,v:12288,n:"Blastermind"},{i:215,v:12315,n:"Blazing Belch (Fire Yawn)"},{i:106,v:10245,n:"Blizzard Chill"},{i:1006,v:8192,n:"Bomb"},{i:1006,v:8214,n:"Bomb (Gold)"},{i:3417,v:16640,n:"Bone Bash Roller Brawl"},{i:3417,v:16670,n:"Bone Bash Roller Brawl (Dark Bronze)"},{i:2000,v:8192,n:"Boom"},{i:22,v:0,n:"Boomer"},{i:22,v:18448,n:"Boomer (Eon's Elite)"},{i:502,v:12288,n:"Bop"},{i:110,v:4614,n:"Bouncer"},{i:506,v:12288,n:"Breeze"},{i:212,v:12291,n:"Breezy Bird (Air Toucan)"},{i:3456,v:16384,n:"Broccoli Guy"},{i:3486,v:16384,n:"Broccoli Guy Vehicle"},{i:1015,v:8192,n:"Buckler"},{i:3006,v:8192,n:"Bumble Blast"},{i:3006,v:8710,n:"Bumble Blast (LightCore)"},{i:3223,v:16384,n:"Burn-Cycle"},{i:3223,v:16414,n:"Burn-Cycle (Patina)"},{i:474,v:12288,n:"Bushwhack"},{i:3241,v:16384,n:"Buzz Wing"},{i:24,v:0,n:"Camo"},{i:3442,v:16384,n:"Cap'n Cluck"},{i:3461,v:16384,n:"Captain Frightbeard"},{i:1010,v:8192,n:"Charge"},{i:3440,v:16384,n:"Chef Pepper Jack"},{i:106,v:4096,n:"Chill"},{i:106,v:4614,n:"Chill (LightCore)"},{i:3464,v:16384,n:"Chill Bill"},{i:3494,v:16384,n:"Chill Bill Vehicle"},{i:3483,v:16384,n:"Chompy Buster"},{i:3453,v:16384,n:"Chompy Mage"},{i:30,v:0,n:"Chop Chop"},{i:30,v:18448,n:"Chop Chop (Eon's Elite)"},{i:30,v:10262,n:"Chop Chop (Green)"},{i:30,v:6148,n:"Chop Chop (Metallic Blue)"},{i:30,v:6145,n:"Chop Chop (Series 2)"},{i:472,v:12288,n:"Chopper"},{i:3233,v:16384,n:"Clown Crusier"},{i:469,v:12288,n:"Cobra Cadabra"},{i:3010,v:8192,n:"Countdown"},{i:3010,v:8710,n:"Countdown (LightCore)"},{i:102,v:4614,n:"Crusher"},{i:3227,v:16384,n:"Crypt Crusher"},{i:32,v:0,n:"Cynder"},{i:32,v:6161,n:"Cynder (Glow in the Dark)"},{i:32,v:6145,n:"Cynder (Series 2)"},{i:3240,v:17410,n:"Dark Barrel Blaster"},{i:2004,v:9218,n:"Dark Blast"},{i:3233,v:17410,n:"Dark Clown Crusier"},{i:218,v:12312,n:"Dark Dagger (Dark Sword)"},{i:476,v:13314,n:"Dark Food Fight"},{i:3424,v:17666,n:"Dark Hammer Slam Bowser"},{i:3224,v:17410,n:"Dark Hot Streak"},{i:16,v:11266,n:"Dark Mega Ram Spyro"},{i:26,v:11266,n:"Dark Ninja Stealth Elf"},{i:3237,v:17410,n:"Dark Sea Shadow"},{i:3002,v:9218,n:"Dark Slobber Tooth"},{i:462,v:13314,n:"Dark Snap Shot"},{i:3412,v:17666,n:"Dark Spitfire"},{i:28,v:0,n:"Dark Spyro"},{i:3415,v:17666,n:"Dark Super Shot Stealth Elf"},{i:3423,v:17666,n:"Dark Turbo Charge Donkey Kong"},{i:458,v:13314,n:"Dark Wildfire"},{i:303,v:0,n:"Darklight Crypt"},{i:3422,v:16670,n:"Deep Dive Gill Grunt"},{i:468,v:12288,n:"Déjà Vu"},{i:6,v:0,n:"Dino-Rang"},{i:6,v:18448,n:"Dino-Rang (Eon's Elite)"},{i:3231,v:16384,n:"Dive Bomber"},{i:3425,v:16670,n:"Dive-Clops"},{i:2003,v:8192,n:"Doom"},{i:3497,v:16384,n:"Doom Jet"},{i:3414,v:16640,n:"Double Dare Trigger Happy"},{i:18,v:0,n:"Double Trouble"},{i:18,v:6145,n:"Double Trouble (Series 2)"},{i:3454,v:16384,n:"Dr. Krankcase"},{i:3451,v:16384,n:"Dragon Hunter"},{i:300,v:0,n:"Dragon's Peak"},{i:208,v:4614,n:"Dragonfire Cannon"},{i:21,v:0,n:"Drill Sergeant"},{i:21,v:6145,n:"Drill Sergeant (Series 2)"},{i:510,v:12288,n:"Drobit"},{i:20,v:0,n:"Drobot"},{i:20,v:4614,n:"Drobot (LightCore)"},{i:20,v:6145,n:"Drobot (Series 2)"},{i:3008,v:8192,n:"Dune Bug"},{i:465,v:12288,n:"Echo"},{i:3428,v:17677,n:"Eggcited Thrillipede"},{i:507,v:13314,n:"Eggsellent Weeruptor"},{i:301,v:0,n:"Empire of Ice"},{i:311,v:20480,n:"Enchanted Elven Forest"},{i:3009,v:9730,n:"Enchanted Star Strike"},{i:467,v:12288,n:"Enigma"},{i:9,v:0,n:"Eruptor"},{i:9,v:18448,n:"Eruptor (Eon's Elite)"},{i:9,v:4614,n:"Eruptor (LightCore)"},{i:9,v:6145,n:"Eruptor (Series 2)"},{i:9,v:6164,n:"Eruptor (White Flocked)"},{i:114,v:4614,n:"Eye-Brawl"},{i:114,v:4629,n:"Eye-Brawl (Pumpkin)"},{i:543,v:12288,n:"Eye-Small (Mini)"},{i:3301,v:8710,n:"Fiery Forge"},{i:3400,v:16640,n:"Fiesta"},{i:105,v:10245,n:"Fire Bone Hot Dog"},{i:456,v:12288,n:"Fist Bump"},{i:108,v:14341,n:"Fizzy Frenzy Pop Fizz"},{i:11,v:0,n:"Flameslinger"},{i:11,v:6146,n:"Flameslinger (Golden/Bronze)"},{i:11,v:6145,n:"Flameslinger (Series 2)"},{i:103,v:4096,n:"Flashwing"},{i:103,v:8710,n:"Flashwing (LightCore)"},{i:452,v:12288,n:"Fling Kong"},{i:464,v:12288,n:"Flip Wreck"},{i:476,v:12288,n:"Food Fight"},{i:115,v:4096,n:"Fright Rider"},{i:115,v:4113,n:"Fright Rider (Glow in the Dark)"},{i:115,v:4117,n:"Fright Rider (Halloween)"},{i:3400,v:17685,n:"Frightful Fiesta"},{i:3004,v:8192,n:"Fryno"},{i:100,v:14341,n:"Full Blast Jet-Vac"},{i:481,v:12288,n:"Funny Bone"},{i:471,v:12288,n:"Gearshift"},{i:203,v:0,n:"Ghost Pirate Swords"},{i:31,v:0,n:"Ghost Roaster"},{i:31,v:18448,n:"Ghost Roaster (Eon's Elite)"},{i:14,v:0,n:"Gill Grunt"},{i:14,v:18448,n:"Gill Grunt (Eon's Elite)"},{i:14,v:6167,n:"Gill Grunt (Metallic)"},{i:14,v:6145,n:"Gill Grunt (Series 2)"},{i:511,v:12288,n:"Gill Runt (Mini)"},{i:540,v:13314,n:"Gnarly Barkley"},{i:112,v:5634,n:"Gnarly Tree Rex"},{i:3234,v:16384,n:"Gold Rusher"},{i:208,v:5634,n:"Golden Dragonfire Cannon"},{i:3224,v:17438,n:"Golden Hot Streak"},{i:3462,v:16384,n:"Golden Queen"},{i:102,v:5634,n:"Granite Crusher"},{i:3013,v:8192,n:"Grim Creeper"},{i:3013,v:8710,n:"Grim Creeper (LightCore)"},{i:310,v:20480,n:"Gryphon Park Observatory"},{i:450,v:12288,n:"Gusto"},{i:3424,v:16670,n:"Hammer Slam Bowser"},{i:230,v:12288,n:"Hand of Fate"},{i:455,v:12288,n:"Head Rush"},{i:202,v:0,n:"Healing Elixir"},{i:111,v:10245,n:"Heavy Duty Sprocket"},{i:29,v:0,n:"Hex"},{i:29,v:4614,n:"Hex (LightCore)"},{i:29,v:6145,n:"Hex (Series 2)"},{i:201,v:0,n:"Hidden Treasure"},{i:477,v:12288,n:"High Five"},{i:3401,v:16640,n:"High Volt"},{i:504,v:12288,n:"Hijinx"},{i:3004,v:13313,n:"Hod Wild Fryno"},{i:3445,v:16384,n:"Hood Sickle"},{i:105,v:4096,n:"Hot Dog"},{i:104,v:4614,n:"Hot Head"},{i:104,v:4627,n:"Hot Head (Sparkle/Glitter)"},{i:3224,v:16384,n:"Hot Streak"},{i:3413,v:16640,n:"Hurricane Jet-Vac"},{i:7,v:10245,n:"Hyper Beam Prism Break"},{i:10,v:0,n:"Ignitor"},{i:10,v:6145,n:"Ignitor (Series 2)"},{i:103,v:5122,n:"Jade Flashwing"},{i:470,v:12288,n:"Jawbreaker"},{i:3220,v:16384,n:"Jet Stream"},{i:100,v:4096,n:"Jet-Vac"},{i:100,v:4614,n:"Jet-Vac (LightCore)"},{i:3006,v:9218,n:"Jolly Bumble Blast"},{i:459,v:12288,n:"Ka-Boom"},{i:3467,v:16384,n:"Kaos"},{i:3503,v:16384,n:"Kaos Trophy"},{i:3010,v:9218,n:"Kickoff Countdown"},{i:469,v:13314,n:"King Cobra Cadabra"},{i:482,v:12288,n:"Knight Light"},{i:484,v:12288,n:"Knight Mare"},{i:5,v:10245,n:"Knockout Terrafin"},{i:478,v:12288,n:"Krypt King"},{i:9,v:10245,n:"Lava Barf Eruptor"},{i:3421,v:16640,n:"Lava Lance Eruptor"},{i:3421,v:16670,n:"Lava Lance Eruptor (Patina)"},{i:3426,v:17667,n:"Legendary Astroblast"},{i:404,v:0,n:"Legendary Bash"},{i:453,v:13315,n:"Legendary Blades"},{i:3417,v:17667,n:"Legendary Bone Bash Roller Brawl"},{i:110,v:5635,n:"Legendary Bouncer"},{i:474,v:13315,n:"Legendary Bushwhack"},{i:106,v:5635,n:"Legendary Chill (LightCore)"},{i:430,v:0,n:"Legendary Chop Chop"},{i:468,v:13315,n:"Legendary Déjà Vu"},{i:3013,v:9731,n:"Legendary Grim Creeper"},{i:230,v:13315,n:"Legendary Hand of Fate"},{i:3413,v:17667,n:"Legendary Hurricane Jet-Vac"},{i:10,v:7171,n:"Legendary Ignitor"},{i:470,v:13315,n:"Legendary Jawbreaker"},{i:100,v:5123,n:"Legendary Jet-Vac"},{i:15,v:7171,n:"Legendary Slam Bam"},{i:416,v:0,n:"Legendary Spyro"},{i:26,v:7171,n:"Legendary Stealth Elf"},{i:3236,v:17311,n:"Legendary Sun Runner"},{i:419,v:0,n:"Legendary Trigger Happy"},{i:3007,v:9219,n:"Legendary Zoo Lou"},{i:3,v:0,n:"Lightning Rod"},{i:3,v:6164,n:"Lightning Rod (Iridescent)"},{i:3,v:6145,n:"Lightning Rod (Series 2)"},{i:463,v:12288,n:"Lob-Star"},{i:108,v:15362,n:"Love Potion Pop Fizz"},{i:16,v:10245,n:"Mega Ram Spyro"},{i:3460,v:16384,n:"Mesmeralda"},{i:308,v:12800,n:"Midnight Museum"},{i:542,v:12288,n:"Mini-Jini (Mini)"},{i:305,v:12288,n:"Mirror of Mystery"},{i:3425,v:17678,n:"Missile-Tow Dive-Clops"},{i:105,v:5122,n:"Molten Hot Dog"},{i:3452,v:16384,n:"Moneybone"},{i:3427,v:16640,n:"Nightfall"},{i:306,v:12288,n:"Nightmare Express"},{i:26,v:10245,n:"Ninja Stealth Elf"},{i:109,v:4614,n:"Ninjini"},{i:455,v:13314,n:"Nitro Head Rush"},{i:478,v:13314,n:"Nitro Krypt King"},{i:3239,v:17410,n:"Nitro Soda Skimmer"},{i:3228,v:17410,n:"Nitro Stealth Stinger"},{i:3455,v:16384,n:"Pain-Yatta"},{i:508,v:12288,n:"Pet-Vac"},{i:32,v:10245,n:"Phantom Cynder"},{i:231,v:12288,n:"Piggy Bank"},{i:302,v:0,n:"Pirate Seas"},{i:3202,v:8192,n:"Platinum Sheep"},{i:0,v:7170,n:"Polar Whirlwind"},{i:108,v:4096,n:"Pop Fizz"},{i:3001,v:8192,n:"Pop Thorn"},{i:508,v:13314,n:"Power Punch Pet-Vac"},{i:7,v:0,n:"Prism Break"},{i:7,v:4614,n:"Prism Break (LightCore)"},{i:7,v:6145,n:"Prism Break (Series 2)"},{i:108,v:5122,n:"Punch Pop Fizz"},{i:3015,v:8192,n:"Punk Shock"},{i:3222,v:16384,n:"Reef Ripper"},{i:3014,v:8192,n:"Rip Tide"},{i:232,v:12288,n:"Rocket Ram"},{i:457,v:12288,n:"Rocky Roll"},{i:3012,v:8192,n:"Roller Brawl"},{i:18,v:7170,n:"Royal Double Trouble"},{i:109,v:5634,n:"Scarlet Ninjini"},{i:209,v:4614,n:"Scorpion Striker Catapult"},{i:3000,v:8192,n:"Scratch"},{i:3237,v:16384,n:"Sea Shadow"},{i:479,v:12288,n:"Short Cut"},{i:113,v:4096,n:"Shroomboom"},{i:113,v:4614,n:"Shroomboom (LightCore)"},{i:3201,v:8192,n:"Sky Diamond"},{i:3232,v:16384,n:"Sky Slicer"},{i:205,v:0,n:"Sky-Iron Shield"},{i:15,v:0,n:"Slam Bam"},{i:15,v:18448,n:"Slam Bam (Eon's Elite)"},{i:15,v:6145,n:"Slam Bam (Series 2)"},{i:3002,v:8192,n:"Slobber Tooth"},{i:509,v:12288,n:"Small Fry"},{i:3411,v:16640,n:"Smash Hit"},{i:3005,v:8192,n:"Smolderdash"},{i:3005,v:8710,n:"Smolderdash (LightCore)"},{i:462,v:12288,n:"Snap Shot"},{i:3406,v:16654,n:"Snow-Brite Stormblade"},{i:3239,v:16384,n:"Soda Skimmer"},{i:1,v:0,n:"Sonic Boom"},{i:1,v:6161,n:"Sonic Boom (Glow in the Dark)"},{i:1,v:6145,n:"Sonic Boom (Series 2)"},{i:207,v:0,n:"Sparx the Dragonfly"},{i:483,v:12288,n:"Spotlight"},{i:19,v:11266,n:"Springtime Trigger Happy"},{i:111,v:4096,n:"Sprocket"},{i:111,v:4115,n:"Sprocket (Sparkle/Glitter)"},{i:503,v:12288,n:"Spry"},{i:16,v:0,n:"Spyro"},{i:16,v:18448,n:"Spyro (Eon's Elite)"},{i:16,v:6145,n:"Spyro (Series 2)"},{i:3009,v:8192,n:"Star Strike"},{i:3009,v:8710,n:"Star Strike (LightCore)"},{i:26,v:0,n:"Stealth Elf"},{i:26,v:18448,n:"Stealth Elf (Eon's Elite)"},{i:26,v:6145,n:"Stealth Elf (Series 2)"},{i:3228,v:16384,n:"Stealth Stinger"},{i:3412,v:16640,n:"Steel Plated Smash Hit"},{i:3406,v:16640,n:"Stormblade"},{i:27,v:0,n:"Stump Smash"},{i:27,v:6145,n:"Stump Smash (Series 2)"},{i:27,v:6164,n:"Stump Smash (White Flocked)"},{i:3236,v:16384,n:"Sun Runner"},{i:8,v:0,n:"Sunburn"},{i:307,v:12800,n:"Sunscraper Spire"},{i:108,v:10245,n:"Super Gulp Pop Fizz"},{i:3415,v:16640,n:"Super Shot Stealth Elf"},{i:113,v:14337,n:"Sure Shot Shroomboom"},{i:101,v:4614,n:"Swarm"},{i:505,v:12288,n:"Terrabite (Mini)"},{i:5,v:0,n:"Terrafin"},{i:5,v:18448,n:"Terrafin (Eon's Elite)"},{i:5,v:6145,n:"Terrafin (Series 2)"},{i:3465,v:16384,n:"The Gulper"},{i:220,v:12318,n:"The Kaos Trap"},{i:24,v:10245,n:"Thorn Horn Camo"},{i:3428,v:16640,n:"Thrillipede"},{i:3226,v:16384,n:"Thump Truck"},{i:107,v:4614,n:"Thumpback"},{i:541,v:12288,n:"Thumpling (Mini)"},{i:451,v:12288,n:"Thunderbolt"},{i:451,v:12317,n:"Thunderbolt (Clear)"},{i:14,v:14345,n:"Tidal Wave Gill Grunt"},{i:233,v:12288,n:"Tiki Speaky"},{i:204,v:0,n:"Time Twister Hourglass"},{i:3221,v:16384,n:"Tomb Buggy"},{i:461,v:12288,n:"Torch"},{i:3301,v:8192,n:"Tower of Time"},{i:460,v:12288,n:"Trail Blazer"},{i:473,v:12288,n:"Tread Head"},{i:112,v:4614,n:"Tree Rex"},{i:19,v:0,n:"Trigger Happy"},{i:19,v:18448,n:"Trigger Happy (Eon's Elite)"},{i:19,v:6145,n:"Trigger Happy (Series 2)"},{i:519,v:12288,n:"Trigger Snappy (Mini)"},{i:475,v:12288,n:"Tuff Luck"},{i:3423,v:16670,n:"Turbo Charge Donkey Kong"},{i:100,v:10245,n:"Turbo Jet-Vac"},{i:30,v:10245,n:"Twin Blade Chop Chop"},{i:220,v:13343,n:"Ultimate Kaos Trap"},{i:9,v:11266,n:"Volcanic Eruptor"},{i:304,v:0,n:"Volcanic Vault"},{i:17,v:0,n:"Voodood"},{i:17,v:18448,n:"Voodood (Eon's Elite)"},{i:454,v:12288,n:"Wallop"},{i:2,v:0,n:"Warnado"},{i:2,v:8710,n:"Warnado (LightCore)"},{i:507,v:12288,n:"Weeruptor"},{i:13,v:0,n:"Wham-Shell"},{i:13,v:8710,n:"Wham-Shell (LightCore)"},{i:0,v:0,n:"Whirlwind"},{i:0,v:18448,n:"Whirlwind (Eon's Elite)"},{i:0,v:6145,n:"Whirlwind (Series 2)"},{i:0,v:6162,n:"Whirlwind (Stone)"},{i:526,v:12288,n:"Whisper Elf (Mini)"},{i:458,v:12288,n:"Wildfire"},{i:3011,v:8192,n:"Wind-Up"},{i:206,v:0,n:"Winged Boots"},{i:463,v:13314,n:"Winterfest Lob-Star"},{i:3443,v:16384,n:"Wolfgang"},{i:23,v:0,n:"Wrecking Ball"},{i:23,v:6164,n:"Wrecking Ball (Iridescent)"},{i:23,v:6145,n:"Wrecking Ball (Series 2)"},{i:12,v:0,n:"Zap"},{i:12,v:6145,n:"Zap (Series 2)"},{i:3007,v:8192,n:"Zoo Lou"},{i:25,v:0,n:"Zook"},{i:25,v:18448,n:"Zook (Eon's Elite)"},{i:25,v:6145,n:"Zook (Series 2)"}
 ];
@@ -385,7 +409,6 @@ const DUMP_LIST = [
 let apiMap = {};
 let selectedDump = null;
 let searchTerm = "";
-
 
 async function loadApiMap() {
   try {
@@ -398,7 +421,7 @@ async function loadApiMap() {
       apiMap[key] = f.image_path;
     });
   } catch (e) {
-    console.warn("API Skylanders non joignable. Les images ne s'afficheront pas.");
+    console.warn("API indisponible. Les images ne s'afficheront pas.");
   }
 }
 
@@ -420,7 +443,7 @@ function renderList() {
     : DUMP_LIST;
 
   if (filtered.length === 0) {
-    list.innerHTML = `<div class="fig-status">Aucune figurine trouvée</div>`;
+    list.innerHTML = `<div class="list-status">Aucun résultat trouvé pour "${searchTerm}"</div>`;
     return;
   }
 
@@ -431,27 +454,29 @@ function renderList() {
   show.forEach(d => {
     const isSelected = selectedDump && selectedDump.i === d.i && selectedDump.v === d.v;
     const imgPath = getImagePath(d.n);
+    
+    // Le conteneur item-thumb a un fond blanc pour absorber le fond de l'image
     const imgHtml = imgPath
       ? `<img src="${IMG_BASE}${imgPath}" alt="" loading="lazy" />`
-      : `<span>?</span>`;
+      : `<span style="color:#cbd5e1; font-weight:bold;">?</span>`;
 
     const idHex = d.i.toString(16).padStart(4,"0").toUpperCase();
     const vHex  = d.v.toString(16).padStart(4,"0").toUpperCase();
 
     html += `
-      <div class="fig-item ${isSelected ? "selected" : ""}" tabindex="0"
+      <div class="list-item ${isSelected ? "selected" : ""}" tabindex="0"
            onclick="selectFig(${d.i}, ${d.v}, '${d.n.replace(/'/g, "\\'")}')"
            onkeypress="if(event.key === 'Enter') selectFig(${d.i}, ${d.v}, '${d.n.replace(/'/g, "\\'")}')">
-        <div class="fig-thumb">${imgHtml}</div>
-        <div class="fig-info">
-          <div class="fig-name">${highlight(d.n, searchTerm)}</div>
-          <div class="fig-id">ID: ${idHex} | VAR: ${vHex}</div>
+        <div class="item-thumb">${imgHtml}</div>
+        <div class="item-info">
+          <div class="item-name">${highlight(d.n, searchTerm)}</div>
+          <div class="item-meta">ID: ${idHex} &nbsp;|&nbsp; VAR: ${vHex}</div>
         </div>
       </div>`;
   });
 
   if (filtered.length > MAX_SHOW) {
-    html += `<div class="fig-status">Affichage de ${MAX_SHOW} sur ${filtered.length} — affinez votre recherche</div>`;
+    html += `<div class="list-status">Affichage de ${MAX_SHOW} résultats sur ${filtered.length}. Affinez votre recherche.</div>`;
   }
 
   list.innerHTML = html;
@@ -460,7 +485,7 @@ function renderList() {
 function highlight(str, q) {
   if (!q) return str;
   const re = new RegExp(`(${q.replace(/[.*+?^${}()|[\]\\]/g,"\\$&")})`, "gi");
-  return str.replace(re, `<mark style="background:var(--primary);color:#fff;border-radius:3px">$1</mark>`);
+  return str.replace(re, `<mark>$1</mark>`);
 }
 
 // ─────────────────────────────────────────────
@@ -471,19 +496,21 @@ function selectFig(i, v, n) {
   if (!dump) return;
   selectedDump = dump;
 
-  // Mise à jour de l'interface d'aperçu
   const imgPath = getImagePath(dump.n);
   const previewImg = document.getElementById("previewImg");
+  const previewPlaceholder = document.getElementById("previewPlaceholder");
 
   if (imgPath) {
     previewImg.src = IMG_BASE + imgPath;
     previewImg.style.display = "block";
+    previewPlaceholder.style.display = "none";
   } else {
     previewImg.style.display = "none";
+    previewPlaceholder.style.display = "block";
   }
 
   document.getElementById("previewName").textContent = dump.n;
-  document.getElementById("previewMeta").innerHTML = `ID <strong>${dump.i.toString(16).padStart(4,"0").toUpperCase()}</strong> — VAR <strong>${dump.v.toString(16).padStart(4,"0").toUpperCase()}</strong>`;
+  document.getElementById("previewMeta").innerHTML = `ID : <strong>${dump.i.toString(16).padStart(4,"0").toUpperCase()}</strong> &nbsp;|&nbsp; VAR : <strong>${dump.v.toString(16).padStart(4,"0").toUpperCase()}</strong>`;
 
   renderList();
   checkReady();
@@ -495,7 +522,7 @@ document.getElementById("searchInput").addEventListener("input", e => {
 });
 
 // ─────────────────────────────────────────────
-// GESTION DE L'UID
+// GESTION DE L'UID (Obligatoire)
 // ─────────────────────────────────────────────
 const uidInput = document.getElementById("uidInput");
 const uidHint  = document.getElementById("uidHint");
@@ -505,23 +532,23 @@ function validateUid(v) {
 }
 
 uidInput.addEventListener("input", () => {
-  const v = uidInput.value;
-  uidInput.classList.remove("valid", "invalid");
+  const v = uidInput.value.trim();
+  uidInput.classList.remove("is-valid", "is-invalid");
   
   if (v.length === 0) {
-    uidHint.textContent = "8 caractères hexadécimaux requis.";
-    uidHint.className = "uid-feedback";
+    uidHint.textContent = "";
+    uidHint.className = "uid-message";
   } else if (validateUid(v)) {
-    uidHint.textContent = "✓ UID Valide";
-    uidHint.className = "uid-feedback ok";
-    uidInput.classList.add("valid");
+    uidHint.textContent = "✓ Format d'UID valide";
+    uidHint.className = "uid-message text-success";
+    uidInput.classList.add("is-valid");
   } else if (v.length === 8) {
-    uidHint.textContent = "✗ L'UID ne doit contenir que des caractères hexadécimaux (0-9, A-F)";
-    uidHint.className = "uid-feedback err";
-    uidInput.classList.add("invalid");
+    uidHint.textContent = "⚠ L'UID ne doit contenir que des caractères hexadécimaux (0-9, A-F)";
+    uidHint.className = "uid-message text-error";
+    uidInput.classList.add("is-invalid");
   } else {
     uidHint.textContent = `${v.length}/8 caractères saisis`;
-    uidHint.className = "uid-feedback";
+    uidHint.className = "uid-message text-muted";
   }
   checkReady();
 });
@@ -531,14 +558,12 @@ uidInput.addEventListener("input", () => {
 // ─────────────────────────────────────────────
 function checkReady() {
   const btn = document.getElementById("downloadBtn");
-  const ready = selectedDump && validateUid(uidInput.value);
+  const isReady = selectedDump && validateUid(uidInput.value.trim());
   
-  if (ready) {
+  if (isReady) {
     btn.classList.remove("disabled");
-    btn.setAttribute("aria-disabled", "false");
   } else {
     btn.classList.add("disabled");
-    btn.setAttribute("aria-disabled", "true");
   }
 }
 
@@ -547,7 +572,7 @@ function slugify(n) {
 }
 
 // ─────────────────────────────────────────────
-// CRYPTOGRAPHIE ORIGINALE DU FICHIER (Intacte)
+// CRYPTOGRAPHIE ORIGINALE DU FICHIER
 // ─────────────────────────────────────────────
 class Long {
   constructor(low, high) {
@@ -628,12 +653,12 @@ function buildDump(uid, iBytes, vBytes) {
 // TÉLÉCHARGEMENT
 // ────────────────────────────────────────────
 document.getElementById("downloadBtn").addEventListener("click", function(e) {
-  if (this.classList.contains("disabled") || !selectedDump || !validateUid(uidInput.value)) {
+  if (this.classList.contains("disabled") || !selectedDump || !validateUid(uidInput.value.trim())) {
     e.preventDefault();
     return;
   }
 
-  const uid = uidInput.value.toUpperCase();
+  const uid = uidInput.value.trim().toUpperCase();
   const uidBytes = Uint8Array.from(uid.match(/.{1,2}/g).map(b => parseInt(b, 16)));
   const iBytes   = Uint8Array.from(selectedDump.i.toString(16).padStart(4,"0").match(/.{1,2}/g).map(b => parseInt(b,16)));
   const vBytes   = Uint8Array.from(selectedDump.v.toString(16).padStart(4,"0").match(/.{1,2}/g).map(b => parseInt(b,16)));
@@ -648,9 +673,7 @@ document.getElementById("downloadBtn").addEventListener("click", function(e) {
   setTimeout(() => URL.revokeObjectURL(url), 5000);
 });
 
-// ─────────────────────────────────────────────
-// INITIALISATION
-// ─────────────────────────────────────────────
+// Initialisation
 async function init() {
   await loadApiMap();
   renderList();
